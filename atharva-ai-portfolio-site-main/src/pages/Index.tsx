@@ -281,7 +281,7 @@ const Index = () => {
             <div className="mb-6 sm:mb-8 flex justify-center">
               <div className="relative perspective-tilt">
                 <Avatar className="w-24 h-24 sm:w-32 sm:h-32 border-4 border-white/20 shadow-2xl animate-floating glass-morphism">
-                  <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face" alt="Atharva Khairnar" />
+                  <AvatarImage src="/imgs/athatva.jpg" alt="Atharva Khairnar" />
                   <AvatarFallback className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-500 to-emerald-500 text-white">
                     AK
                   </AvatarFallback>
