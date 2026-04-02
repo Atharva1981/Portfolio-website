@@ -1,8 +1,6 @@
 
 import React from 'react';
-import { ExternalLink, Github, Code } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { ExternalLink, Github } from 'lucide-react';
 
 interface Project {
   title: string;
@@ -13,85 +11,90 @@ interface Project {
   githubUrl: string;
 }
 
-interface ProjectCardProps {
-  project: Project;
-}
-
-const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+const ProjectCard: React.FC<{ project: Project }> = ({ project }) => {
   const [imageError, setImageError] = React.useState(false);
+  const isDark = document.documentElement.classList.contains('dark');
 
   return (
-    <Card className="group glass-effect hover:scale-[1.02] sm:hover:scale-105 transition-all duration-500 overflow-hidden relative">
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 via-transparent to-emerald-500/0 group-hover:from-blue-500/5 group-hover:to-emerald-500/5 transition-all duration-500"></div>
-      
-      <CardContent className="p-0 relative z-10">
-        <div className="aspect-video bg-gradient-to-br from-slate-800 to-slate-900 rounded-t-lg overflow-hidden relative">
-          {!imageError ? (
-            <img
-              src={project.image}
-              alt={project.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-600/20 to-emerald-600/20">
-              <div className="text-center p-4">
-                <Code className="h-12 w-12 mx-auto mb-2 text-primary/50" />
-                <p className="text-xs text-muted-foreground">{project.title}</p>
-              </div>
+    <div className="terminal-card group h-full flex flex-col">
+
+      {/* macOS window header */}
+      <div className="terminal-header">
+        <span className="win-dot" style={{ background: '#ff5f57' }} />
+        <span className="win-dot" style={{ background: '#febc2e' }} />
+        <span className="win-dot" style={{ background: '#28c840' }} />
+        <span className="ml-3 text-xs font-mono opacity-40 truncate flex-1"
+          style={{ color: isDark ? '#fff' : '#000' }}>
+          ~/projects/{project.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}
+        </span>
+      </div>
+
+      {/* Project image */}
+      <div className="relative overflow-hidden" style={{ aspectRatio: '16/9' }}>
+        {!imageError ? (
+          <img
+            src={project.image}
+            alt={project.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center p-4"
+            style={{ background: isDark ? '#0d0d0d' : '#f3f3f3' }}>
+            <div className="terminal-prompt mb-2">$ ls -la projects/</div>
+            <div className="text-xs font-mono opacity-50 text-center"
+              style={{ color: isDark ? '#fff' : '#000' }}>
+              {project.title}
             </div>
+          </div>
+        )}
+        {/* gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </div>
+
+      {/* Content */}
+      <div className="p-5 flex flex-col flex-1">
+        {/* Terminal prompt */}
+        <div className="terminal-prompt mb-1">$ describe project</div>
+
+        <h3 className="font-bold text-base mb-2 leading-snug"
+          style={{ color: isDark ? '#fff' : '#111' }}>
+          {project.title}
+        </h3>
+
+        <p className="text-sm leading-relaxed mb-4 flex-1"
+          style={{ color: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)' }}>
+          {project.description}
+        </p>
+
+        {/* Tech chips */}
+        <div className="flex flex-wrap gap-1.5 mb-4">
+          {project.tech.map(t => (
+            <span key={t} className="skill-chip" style={{ fontSize: '0.7rem', padding: '3px 10px' }}>{t}</span>
+          ))}
+        </div>
+
+        {/* Action buttons */}
+        <div className="flex gap-2">
+          {project.liveUrl !== '#' && (
+            <button
+              className="btn-push flex-1 justify-center text-sm"
+              style={{ padding: '7px 12px', fontSize: '0.8rem' }}
+              onClick={() => window.open(project.liveUrl, '_blank')}>
+              <ExternalLink className="w-3.5 h-3.5" /> Live Demo
+            </button>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+          {project.githubUrl && project.githubUrl !== '#' && (
+            <button
+              className="btn-outline-push flex-1 justify-center"
+              style={{ padding: '7px 12px', fontSize: '0.8rem' }}
+              onClick={() => window.open(project.githubUrl, '_blank')}>
+              <Github className="w-3.5 h-3.5" /> GitHub
+            </button>
+          )}
         </div>
-        
-        <div className="p-4 sm:p-6">
-          <h3 className="text-lg sm:text-xl font-semibold mb-2 text-foreground group-hover:text-primary transition-colors duration-300">
-            {project.title}
-          </h3>
-          
-          <p className="text-sm sm:text-base text-muted-foreground mb-3 sm:mb-4 leading-relaxed">
-            {project.description}
-          </p>
-          
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3 sm:mb-4">
-            {project.tech.map((tech, index) => (
-              <span
-                key={index}
-                className="px-2 sm:px-3 py-0.5 sm:py-1 glass-effect text-primary rounded-full text-xs sm:text-sm font-medium hover:scale-105 transition-transform duration-200"
-              >
-                {tech}
-              </span>
-            ))}
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-            {project.liveUrl !== '#' && (
-              <Button 
-                variant="default" 
-                size="sm" 
-                className="w-full sm:flex-1 glass-effect bg-gradient-to-r from-blue-500 to-emerald-500 hover:scale-105 transition-all duration-300 text-xs sm:text-sm"
-                onClick={() => window.open(project.liveUrl, '_blank')}
-              >
-                <ExternalLink className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                Live Demo
-              </Button>
-            )}
-            {project.githubUrl && project.githubUrl !== '#' && (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full sm:flex-1 glass-effect hover:scale-105 transition-all duration-300 text-xs sm:text-sm"
-                onClick={() => window.open(project.githubUrl, '_blank')}
-              >
-                <Github className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
-                GitHub
-              </Button>
-            )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
